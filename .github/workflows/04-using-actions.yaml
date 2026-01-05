@@ -15,5 +15,5 @@ jobs:
             # 1. Install dep of our react app
             - name: Install dependencies
               run: npm ci
-              working-directory: 04-using-actions/react-app
+              working-directory: ./04-using-actions/react-app
         # 2. Execute automated tests
