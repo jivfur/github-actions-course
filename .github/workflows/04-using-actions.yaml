@@ -4,6 +4,10 @@ on:
 jobs:
     build:
         runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./04-using-actions/react-app
+        name: Build and Test React App
         # 0. Checkout the code
         steps:
             - name: Checkout repository
@@ -15,5 +19,6 @@ jobs:
             # 1. Install dep of our react app
             - name: Install dependencies
               run: npm ci
-              working-directory: ./04-using-actions/react-app
-        # 2. Execute automated tests
+            # 2. Execute automated tests
+            - name: Run unit tests
+              run: npm run test
