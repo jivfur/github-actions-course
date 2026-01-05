@@ -2,8 +2,8 @@ name: 02-workflow-events
 on:
     push:
     pull_request:
-    schedule:
-        - cron: "*/5 * * * *"
+    # schedule:
+    #     - cron: "*/5 * * * *"
     workflow_dispatch: #manual trigger from the Actions tab
 jobs:
     on-push-event:
