@@ -1,0 +1,16 @@
+name: 04 - Using Actions
+on:
+    workflow_dispatch:
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        # 0. Checkout the code
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+            - name: Print working directory
+              run: pwd
+            - name: List files
+              run: ls -la
+        # 1. Install dep of our react app
+        # 2. Execute automated tests
