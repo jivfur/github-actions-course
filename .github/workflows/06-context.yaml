@@ -1,8 +1,14 @@
 name: 06 Context
-run-name: My custom workflow run - ${{ runner.os }} - ${{ github.event_name }}
+run-name: 06 - Context | DEBUG - ${{ inputs.debug }}
 on:
   push:
   workflow_dispatch:
+    inputs:
+      debug:
+        description: "Enable debug mode"
+        required: false
+        type: boolean
+        default: false
 jobs:
   echo-data:
     runs-on: ubuntu-latest
