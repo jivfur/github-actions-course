@@ -1,0 +1,26 @@
+name: 07- Using Expressions
+run-name: 07 - Using Expressions | DEBUG - ${{ inputs.debug }}
+on:
+    push:
+    workflow_dispatch:
+        inputs:
+            debug:
+                description: "Enable debug mode"
+                required: false
+                type: boolean
+                default: false
+jobs:
+    evaluate-expressions:
+        runs-on: ubuntu-latest
+        steps:
+            - name: "[debug] Print start up"
+              if: ${{ inputs.debug }}
+              run: |
+                  echo "Triggered by ${{ github.event_name }} event"
+                  echo "Branch: ${{ github.ref }}"
+                  echo "Commit SHA: ${{ github.sha }}"
+                  echo "Runner OS: ${{ runner.os }}"
+            - name: "[debug] Print when triggered on main branch"
+              if: ${{ inputs.debug && github.ref == 'refs/heads/main' }}
+              run: |
+                  echo "This run was triggered on the main branch."
