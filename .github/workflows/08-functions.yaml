@@ -1,0 +1,29 @@
+name: 08-Functions
+run-name: 08 - Using Functions
+on:
+    push:
+    workflow_dispatch:
+jobs:
+    evaluate-functions:
+        runs-on: ubuntu-latest
+        steps:
+            - name: "Faling Step to demonstrate always()"
+              run: |
+                  echo "This step will fail intentionally."
+                  exit 1
+            - name: "I will be skipped if the previous step fails"
+              if: ${{ success() }}
+              run: |
+                  echo "Previous step succeeded, so I am running."
+            - name: "I will execute}"
+              if: ${{ failure()}}
+              run: |
+                  echo "Previous step failed, so I am running."
+            - name: "I will execute"
+              if: ${{ !cancelled() }}
+              run: |
+                  echo "I will execute when cancelled."
+            - name: "I will execute if the workflow has been cancelled"
+              if: ${{ cancelled() }}
+              run: |
+                  echo "I will execute if the workflow has been cancelled."
