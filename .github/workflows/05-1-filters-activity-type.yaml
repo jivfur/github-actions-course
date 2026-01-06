@@ -1,0 +1,15 @@
+name: 05-1 - Filters Activity Type
+on:
+    pull_request:
+        types:
+            - opened
+            - synchronize
+        branches:
+            - main
+jobs:
+    echo:
+        runs-on: ubuntu-latest
+        name: Echo Activity Type
+        steps:
+            - name: Echo the activity type of this pull request
+              run: echo "The activity type of this pull request is: ${{ github.event.action }}"
