@@ -7,6 +7,18 @@ jobs:
     evaluate-functions:
         runs-on: ubuntu-latest
         steps:
+            - name: "ToJson Function Example"
+              run: |
+                  cat << EOF
+                  ${{ toJson(github.event.pull_request.labels) }}
+                  EOF
+            - name: "Bug label check"
+              run: |
+                  if ${{ contains(github.event.pull_request.labels.*.name, 'bug') }}; then
+                      echo "This PR has a bug label."
+                  else
+                      echo "This PR does not have a bug label."
+                  fi
             - name: "Faling Step to demonstrate always()"
               run: |
                   echo "This step will fail intentionally."
