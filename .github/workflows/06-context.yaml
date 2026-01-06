@@ -9,9 +9,16 @@ on:
         required: false
         type: boolean
         default: false
+env:
+  MY_WORKFLOW_VAR: "global"
+  MY_OVERWRITTEN_VAR: "global"
 jobs:
   echo-data:
     runs-on: ubuntu-latest
+    env:
+      MY_JOB_VAR: "job"
+      MY_OVERWRITTEN_VAR: "job"
+
     name: Echo GitHub Context Data
     steps:
       - name: Echo GitHub Repository Name
@@ -41,3 +48,15 @@ jobs:
       - name: Retrieve Variable
         run: |
           echo "Custom Variable: ${{ vars.CUSTOM_VAR }}"
+      - name: Echo Workflow Environment Variable
+        run: |
+          echo "Environment Variable MY_WORKFLOW_VAR: ${{ env.MY_WORKFLOW_VAR }}"
+      - name: Echo Overwritten Environment Variable
+        run: |
+          echo "Overwritten Environment Variable MY_OVERWRITTEN_VAR: ${{ env.MY_OVERWRITTEN_VAR }}"
+      - name: Echo Environment Variable
+        run: |
+          echo "Environment Variable MY_JOB_VAR: ${{ env.MY_JOB_VAR }}"
+      - name: Echo Overwritten Environment Variable
+        run: |
+          echo "Overwritten Environment Variable MY_OVERWRITTEN_VAR: ${{ env.MY_OVERWRITTEN_VAR }}"
