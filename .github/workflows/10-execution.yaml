@@ -1,6 +1,12 @@
 name: 10 Controlling the execution flow
 on:
   workflow_dispatch:
+    inputs:
+      pass-unit-tests:
+        description: "emulate passing unit tests"
+        type: boolean
+        default: true
+
 jobs:
   lint-build:
     runs-on: ubuntu-latest
