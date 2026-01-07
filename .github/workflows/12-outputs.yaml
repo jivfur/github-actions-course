@@ -2,7 +2,7 @@ name: 12 - Working with Outputs
 on:
   workflow_dispatch:
     inputs:
-      status-build:
+      build-status:
         description: "Emulate the status of a build"
         type: boolean
         default: true
