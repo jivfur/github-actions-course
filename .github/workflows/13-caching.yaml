@@ -15,13 +15,15 @@ on:
           - 20.x
           - 21.x
         default: 20.x
+env:
+  WORK_DIR: 13-using-caching/react-app
 
 jobs:
   install-deps:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: 13-caching/react-app
+        working-directory: ${{env.WORK_DIR}}
     outputs:
       deps-cache-key: ${{ steps.cache-key.outputs.CACHE_KEY }}
     steps:
@@ -34,13 +36,13 @@ jobs:
       - name: Calculate cache key
         id: cache-key
         run: |
-          echo "CACHE_KEY=deps-node-modules-${{ hashFiles('13-caching/react-app/package-lock.json') }}" >> "$GITHUB_OUTPUT"
+          echo "CACHE_KEY=deps-node-modules-${{ hashFiles('${{env.working-directory}}/package-lock.json') }}" >> "$GITHUB_OUTPUT"
       - name: Download cached dependencies
         uses: actions/cache@v3
         if: ${{ inputs.use-cache }}
         id: cache
         with:
-          path: 13-caching/react-app/node_modules
+          path: "${{ env.WORK_DIR}}/node_modules"
           key: ${{ steps.cache-key.outputs.CACHE_KEY }}
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
@@ -50,7 +52,7 @@ jobs:
     needs: install-deps
     defaults:
       run:
-        working-directory: 13-caching/react-app
+        working-directory: ${{env.WORK_DIR}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,7 +64,7 @@ jobs:
         uses: actions/cache@v3
         id: cache
         with:
-          path: 13-caching/react-app/node_modules
+          path: "${{ env.WORK_DIR}}/node_modules"
           key: ${{ needs.install-deps.outputs.deps-cache-key }}
       - name: Testing
         run: npm run test
@@ -73,7 +75,7 @@ jobs:
     needs: install-deps
     defaults:
       run:
-        working-directory: 13-caching/react-app
+        working-directory: ${{ env.WORK_DIR}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -85,7 +87,7 @@ jobs:
         uses: actions/cache@v3
         id: cache
         with:
-          path: 13-caching/react-app/node_modules
+          path: "${{ env.WORK_DIR}}/node_modules"
           key: ${{ needs.install-deps.outputs.deps-cache-key }}
       - name: Building
         run: npm run build
