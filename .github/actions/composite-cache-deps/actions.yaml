@@ -10,6 +10,14 @@ inputs:
     description: The working directory of the app
     default: '.'
     required: false
+  target-env:
+    description: dev or prod
+    default: dev
+    type: choice
+    options:
+      - dev
+      - prod
+
 runs:
   using: composite
   steps:
@@ -21,11 +29,16 @@ runs:
       id: cache
       uses: actions/cache@v3
       with:
-          key: node-modules-${{ hashFiles(format('{0}/{1}',inputs.WORK_DIR,'package-lock.json')) }}"
+          key: node-modules-${{inputs.target-env}}-${{ hashFiles(format('{0}/{1}',inputs.WORK_DIR,'package-lock.json')) }}"
           path: "${inputs.WORK_DIR}}"
     - name: Install dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
-      run: npm ci
+      if: steps.cache.outputs.cache-hit != 'true' && inputs.target-env=='dev'
+      run: npm ci --omit=dev
+      shell: bash
+      working-directory: ${{inputs.WORK_DIR}}
+    - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true' && inputs.target-env=='dev'
+      run: npm ci --omit=dev
       shell: bash
       working-directory: ${{inputs.WORK_DIR}}
 
