@@ -1,0 +1,6 @@
+name: Update NPM Dependencies
+description: Check ig there's any updates to NPM packages.
+
+runs:
+  using: node20
+  main: index.js
