@@ -9,7 +9,7 @@ jobs:
             - name: checkout
               uses: actions/checkout@v4
             - name: Check for dependency updates
-              uses: ./github/actions/js-dependency-update
+              uses: ./.github/actions/js-dependency-update
             # - name: tests
             #   run: npm run tests
             #   working-directory: ${{env.working-directory}}
