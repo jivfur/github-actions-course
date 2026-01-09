@@ -1,5 +1,5 @@
 name: 17 - Custom Actions - Composite
-
+run-name: 17-1- Custom Actions - JS
 on:
     workflow_dispatch:
         inputs:
