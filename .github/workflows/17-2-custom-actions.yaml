@@ -1,18 +1,35 @@
 name: 17-2- Custom Actions - JS
 run-name: 17-2- Custom Actions - JS
 on:
-    workflow_dispatch:
+  workflow_dispatch:
+    inputs:
+      base-branch:
+        type: string
+        description: The branch used as the base for the dependency update checks
+        default: main
+      target-branch:
+        type: string
+        description: The branc from which the PR is created
+        default: update-dependencies
+      working-directory:
+        type: string
+        description: Working working
+        default: 17-custom-actions/reactapp/
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - name: checkout
-              uses: actions/checkout@v4
-            - name: Check for dependency updates
-              uses: ./.github/actions/js-dependency-update
-            # - name: tests
-            #   run: npm run tests
-            #   working-directory: ${{env.working-directory}}
-            # - name: build
-            #   run: npm run build
-            #   working-directory: ${{env.working-directory}}
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Check for dependency updates
+        uses: ./.github/actions/js-dependency-update
+        with:
+          base-branch: ${{inputs.base-branch}}
+          target-branch: ${{inputs.target-branch}}
+          working-directory: ${{inputs.working-directory}}
+      # - name: tests
+      #   run: npm run tests
+      #   working-directory: ${{env.working-directory}}
+      # - name: build
+      #   run: npm run build
+      #   working-directory: ${{env.working-directory}}

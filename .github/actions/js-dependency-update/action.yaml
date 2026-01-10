@@ -1,6 +1,24 @@
 name: Update NPM Dependencies
 description: Check ig there's any updates to NPM packages.
 
+inputs:
+  base-branch:
+    description: The branch used as the base for the dependency update checks
+    default: main
+    required: true
+  target-branch:
+    description: The branc from which the PR is created
+    required: false
+  working-directory:
+    description: Working working 
+    required: true
+  gh-token:
+    description: Auth toke with repository acess. Must have access to content and PR
+    required: true
+  debug:
+    description: Whether the output message to the console.
+    default: 'false'
+
 runs:
   using: node20
   main: index.js
