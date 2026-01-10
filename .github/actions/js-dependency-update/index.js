@@ -5,23 +5,50 @@ const github = require('@actions/github')
 const validateBranchName = ({ branchName }) => /^[a-zA-Z0-9_\-\.\/]+$/.test(branchName);
 const validateDirectoryName = ({ directoryName }) => /^[a-zA-Z0-9_\-\/]+$/.test(directoryName);
 
+const setUpGit = async () => {
+    await exec.exec('git config --global user.name gh-automation')
+    await exec.exec('git config --global user.email gh-automation@email.com')
+};
+
+const setLogger = ({ debug, prefix } = { debug: false, prefix: '' }) => ({
+    debug: (message) => {
+        if (debug) {
+            core.info(`DEBUG ${prefix} ${prefix ? ':' : ''}${message} `)
+        }
+
+    },
+    error: (message) => {
+        core.error(`${prefix} ${prefix ? ':' : ''}${message} `)
+
+    },
+
+    info: (message) => {
+        core.info(`${prefix} ${prefix ? ':' : ''}${message} `)
+
+    }
+
+
+});
+
+
 async function run() {
-    const baseBranch = core.getInput("base-branch");
-    const targetBranch = core.getInput("target-branch");
-    const ghToken = core.getInput("gh-token");
-    const workingDir = core.getInput("working-directory");
+    const baseBranch = core.getInput("base-branch", { required: true });
+    const headBranch = core.getInput("head-branch", { required: true });
+    const ghToken = core.getInput("gh-token", { required: true });
+    const workingDir = core.getInput("working-directory", { required: true });
     const debug = core.getBooleanInput("debug")
+    const logger = setLogger({ debug, prefix: "[js-dependency-update]" })
 
     const commomExecOpts = {
         cwd: workingDir
     }
-
+    logger.debug('Validating inputs - base-branc, head-branch, working-directory')
     core.setSecret(ghToken);
     if (!validateBranchName({ branchName: baseBranch })) {
         core.setFailed('Invalid base branch name.')
         return
     }
-    if (!validateBranchName({ branchName: targetBranch })) {
+    if (!validateBranchName({ branchName: headBranch })) {
         core.setFailed('Invalid target branch name.')
         return
     }
@@ -30,9 +57,9 @@ async function run() {
         return
     }
 
-    core.info('[js-dependency-update]: base branch is ${baseBranch}')
-    core.info('[js-dependency-update]: target branch is ${targetBranch}')
-    core.info('[js-dependency-update]: working directory is ${workingDir}')
+    logger.debug('base branch is ${baseBranch}')
+    logger.debug('target branch is ${headBranch}')
+    logger.debug('working directory is ${workingDir}')
 
     await exec.exec('npm update', [], {
         ...commomExecOpts
@@ -42,10 +69,9 @@ async function run() {
         ...commomExecOpts
     })
     if (gitStatus.stdout.length > 0) {
-        core.info("[js-dependency-update]: There are updates available.")
-        await exec.exec('git config --global user.name gh-automation')
-        await exec.exec('git config --global user.email gh-automation@email.com')
-        await exec.exec(`git checkout -b ${targetBranch}`, [], {
+        logger.debug("There are updates available.")
+        setUpGit;
+        await exec.exec(`git checkout -b ${headBranch}`, [], {
             ...commomExecOpts
         })
         await exec.exec('git add  package.json package-lock.json', [], {
@@ -54,7 +80,7 @@ async function run() {
         await exec.exec('git commit -m "chore: Update Dependencies', [], {
             ...commomExecOpts
         })
-        await exec.exec(`git push -u origin ${targetBranch} --force`, [], {
+        await exec.exec(`git push -u origin ${headBranch} --force`, [], {
             ...commomExecOpts
         })
         const octokit = github.getOctokit(ghToken)
@@ -65,16 +91,16 @@ async function run() {
                 title: 'Update NPM Packages',
                 body: 'This PR updates NPM Packages',
                 base: baseBranch,
-                head: targetBranch
+                head: headBranch
 
             })
         } catch (e) {
-            core.warning('[js-dependency-update] : Something went wrong while creating the PR. Check logs below')
-            core.warning(e.message)
-            core.warning(e)
+            logger.error('Something went wrong while creating the PR. Check logs below')
+            logger.error(e.message)
+            logger.error(e)
         }
     } else {
-        core.info("[js-dependency-update]: No updates at this point in time.")
+        logger.info("[js-dependency-update]: No updates at this point in time.")
     }
 
     /*

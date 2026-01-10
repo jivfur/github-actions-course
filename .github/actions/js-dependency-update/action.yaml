@@ -6,7 +6,7 @@ inputs:
     description: The branch used as the base for the dependency update checks
     default: main
     required: true
-  target-branch:
+  head-branch:
     description: The branc from which the PR is created
     required: false
   working-directory:

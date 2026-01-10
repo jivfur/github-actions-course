@@ -7,7 +7,7 @@ on:
         type: string
         description: The branch used as the base for the dependency update checks
         default: main
-      target-branch:
+      head-branch:
         type: string
         description: The branc from which the PR is created
         default: update-dependencies
@@ -15,6 +15,9 @@ on:
         type: string
         description: Working working
         default: 17-custom-actions/reactapp/
+      debug:
+        type: boolean
+        default: false
 permissions:
   contents: write
   pull-requests: write
@@ -28,9 +31,10 @@ jobs:
         uses: ./.github/actions/js-dependency-update
         with:
           base-branch: ${{inputs.base-branch}}
-          target-branch: ${{inputs.target-branch}}
+          head-branch: ${{inputs.head-branch}}
           working-directory: ${{inputs.working-directory}}
           gh-token: ${{secrets.GITHUB_TOKEN}}
+          debug: ${{inptus.debug}}
       # - name: tests
       #   run: npm run tests
       #   working-directory: ${{env.working-directory}}
