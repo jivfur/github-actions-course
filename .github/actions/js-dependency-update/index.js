@@ -43,18 +43,18 @@ async function run() {
     })
     if (gitStatus.stdout.length > 0) {
         core.info("[js-dependency-update]: There are updates available.")
-        await core.exec('git config --global user.name "gh-automation"')
-        await core.exec('git config --global user.gmail "gh-automation@email.com"')
-        await core.exec('git checkout -b ${targetBranch}', [], {
+        await exec.exec('git config --global user.name "gh-automation"')
+        await exec.exec('git config --global user.gmail "gh-automation@email.com"')
+        await exec.exec('git checkout -b ${targetBranch}', [], {
             ...commomExecOpts
         })
-        await core.exec('git add  package.json package-lock.json', [], {
+        await exec.exec('git add  package.json package-lock.json', [], {
             ...commomExecOpts
         })
-        await core.exec('git commit -m "chore: Update Dependencies', [], {
+        await exec.exec('git commit -m "chore: Update Dependencies', [], {
             ...commomExecOpts
         })
-        await core.exec('git push -u origin $$targetBranch$ --force', [], {
+        await exec.exec('git push -u origin $$targetBranch$ --force', [], {
             ...commomExecOpts
         })
         const octokit = github.getOctokit(ghToken)
