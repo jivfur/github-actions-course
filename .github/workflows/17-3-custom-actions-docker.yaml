@@ -4,8 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       url:
-        type: string
-        default: "http:///wwww.google.com"
+        type: choice
+        options:
+          - "http://www.google.com"
+          - "http://www.invalid-adsaadas.com"
+          - "asdadasdasda"
 jobs:
   ping-url:
     runs-on: ubuntu-latest
