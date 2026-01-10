@@ -1,0 +1,25 @@
+name: 17-3- Custom Actions - JS
+run-name: 17-3- Custom Actions - JS
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        type: string
+        default: "http:///wwww.google.com"
+jobs:
+  ping-url:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Ping URL
+        uses: ./.github/actions/docker-ping-url
+        with:
+          url: ${{inputs.url}}
+
+      # - name: tests
+      #   run: npm run tests
+      #   working-directory: ${{env.working-directory}}
+      # - name: build
+      #   run: npm run build
+      #   working-directory: ${{env.working-directory}}
