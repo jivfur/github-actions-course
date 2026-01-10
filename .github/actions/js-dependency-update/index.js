@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const exec = require('@actions/exec');
+const github = require('@actions/github')
 
 const validateBranchName = ({ branchName }) => /^[a-zA-Z0-9_\-\.\/]+$/.test(branchName);
 const validateDirectoryName = ({ directoryName }) => /^[a-zA-Z0-9_\-\/]+$/.test(directoryName);
@@ -10,6 +11,10 @@ async function run() {
     const ghToken = core.getInput("gh-token");
     const workingDir = core.getInput("working-directory");
     const debug = core.getBooleanInput("debug")
+
+    const commomExecOpts = {
+        cwd: workingDir
+    }
 
     core.setSecret(ghToken);
     if (!validateBranchName({ branchName: baseBranch })) {
@@ -30,14 +35,44 @@ async function run() {
     core.info('[js-dependency-update]: working directory is ${workingDir}')
 
     await exec.exec('npm update', [], {
-        cwd: workingDir
+        ...commomExecOpts
     })
 
     const gitStatus = await exec.getExecOutput('git status -s package*.json', [], {
-        cwd: workingDir
+        ...commomExecOpts
     })
     if (gitStatus.stdout.length > 0) {
         core.info("[js-dependency-update]: There are updates available.")
+        await core.exec('git config --global user.name "gh-automation"')
+        await core.exec('git config --global user.gmail "gh-automation@email.com"')
+        await core.exec('git checkout -b ${targetBranch}', [], {
+            ...commomExecOpts
+        })
+        await core.exec('git add  package.json package-lock.json', [], {
+            ...commomExecOpts
+        })
+        await core.exec('git commit -m "chore: Update Dependencies', [], {
+            ...commomExecOpts
+        })
+        await core.exec('git push -u origin $$targetBranch$ --force', [], {
+            ...commomExecOpts
+        })
+        const octokit = github.getOctokit(ghToken)
+        try {
+            await octokit.rest.pulls.create({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                title: 'Update NPM Packages',
+                body: 'This PR updates NPM Packages',
+                base: baseBranch,
+                head: targetBranch
+
+            })
+        } catch (e) {
+            core.warning('[js-dependency-update] : Something went wrong while creating the PR. Check logs below')
+            core.warning(e.message)
+            core.warning(e)
+        }
     } else {
         core.info("[js-dependency-update]: No updates at this point in time.")
     }

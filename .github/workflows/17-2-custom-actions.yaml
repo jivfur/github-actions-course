@@ -15,6 +15,9 @@ on:
         type: string
         description: Working working
         default: 17-custom-actions/reactapp/
+permissions:
+  contents: write
+  pull-requests: write
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,6 +30,7 @@ jobs:
           base-branch: ${{inputs.base-branch}}
           target-branch: ${{inputs.target-branch}}
           working-directory: ${{inputs.working-directory}}
+          gh-token: ${{secrets.GITHUB_TOKEN}}
       # - name: tests
       #   run: npm run tests
       #   working-directory: ${{env.working-directory}}
