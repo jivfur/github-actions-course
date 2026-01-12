@@ -2,18 +2,18 @@ name: 19 Managing Concurrency
 
 on:
   workflow_dispatch:
-  inputs:
-    url:
-      type: string
-      required: true
-      description: The url to ping
-    max_trials:
-      required: false
-      description: the max number of trials before calling fail
-      default: 20
-    delay:
-      required: false
-      default: 5
+    inputs:
+      url:
+        type: string
+        required: true
+        description: The url to ping
+      max_trials:
+        required: false
+        description: the max number of trials before calling fail
+        default: 20
+      delay:
+        required: false
+        default: 5
 
 concurrency:
   group: ${{github.workflow}} - ${{github.ref}}
