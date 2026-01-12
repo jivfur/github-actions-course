@@ -7,7 +7,7 @@ on:
       type: string
       required: true
       description: The url to ping
-    max_trials: 
+    max_trials:
       required: false
       description: the max number of trials before calling fail
       default: 20
@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   ping:
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4

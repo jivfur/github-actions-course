@@ -1,0 +1,42 @@
+name: 19 -2 -Managing Concurrency
+
+on:
+  workflow_dispatch:
+  inputs:
+    url:
+      type: string
+      required: true
+      description: The url to ping
+    max_trials:
+      required: false
+      description: the max number of trials before calling fail
+      default: 20
+    delay:
+      required: false
+      default: 5
+
+jobs:
+  ping-with-concurrency:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{github.workflow}} - ${{github.ref}}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Ping URL
+        uses: ./.github/actions/docker-ping-url
+        with:
+          url: ${{inputs.url}}
+          max_trials: ${{inputs.max_trials}}
+          delay: ${{inputs.delay}}
+  ping-without-concurrency:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: Ping URL
+        uses: ./.github/actions/docker-ping-url
+        with:
+          url: ${{inputs.url}}
+          max_trials: ${{inputs.max_trials}}
+          delay: ${{inputs.delay}}
